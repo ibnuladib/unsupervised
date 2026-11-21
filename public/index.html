@@ -86,9 +86,27 @@
     </section>
   </main>
 
+  <section class="pair">
+    <div class="todos">
+      <h2><i>03</i>the list</h2>
+      <form id="todo-form" class="capture slim">
+        <span class="prompt">&gt;</span>
+        <input id="t-title" placeholder="a small next step" required autocomplete="off" />
+        <input id="t-due" type="date" title="due date" />
+        <button class="go" type="submit">add</button>
+      </form>
+      <div id="todos"></div>
+    </div>
+
+    <div class="notebook">
+      <h2><i>04</i>the notebook<button id="note-new" class="h2-btn">+ new note</button></h2>
+      <div id="notes"></div>
+    </div>
+  </section>
+
   <section class="wall">
     <div class="wall-head">
-      <h2><i>03</i>the wall</h2>
+      <h2><i>05</i>the wall</h2>
       <div class="wall-nav">
         <button id="wall-prev" aria-label="previous">&larr;</button>
         <button id="wall-next" aria-label="next">&rarr;</button>
@@ -127,6 +145,16 @@
       <button id="connect-go" class="go">provision learning log</button>
       <div id="connect-status" class="footnote"></div>
     </div>
+  </div>
+
+  <div id="note-modal" class="modal hidden">
+    <form id="note-form" class="modal-box">
+      <button id="note-close" class="close" type="button">close</button>
+      <div class="ep-card"><span id="note-for">a note</span><b>write it down</b></div>
+      <input id="note-title" placeholder="the one-line takeaway" required autocomplete="off" />
+      <textarea id="note-text" rows="6" placeholder="what you want to remember, in your own words"></textarea>
+      <button class="go" type="submit">save note</button>
+    </form>
   </div>
 
   <script src="app.js"></script>

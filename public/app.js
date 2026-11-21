@@ -76,6 +76,8 @@ function render(state) {
   renderTopics(state);
   renderHeatmap(state);
   renderGroups(state);
+  renderTodos(state);
+  renderNotes(state);
 }
 
 function renderTopics(state) {
@@ -176,6 +178,12 @@ function itemRow(item, n) {
     focus.onclick = () => toggleSession(item);
     actions.appendChild(focus);
   }
+  const noteBtn = document.createElement("button");
+  noteBtn.textContent = "note";
+  noteBtn.title = "write a note on this";
+  noteBtn.onclick = () => openNote(item);
+  actions.appendChild(noteBtn);
+
   const cyc = document.createElement("button");
   cyc.className = "status-btn s-" + item.status.toLowerCase();
   cyc.textContent = item.status;
@@ -378,7 +386,9 @@ function showRecap(el, md) {
 const closeModals = () => {
   $("recap-modal").classList.add("hidden");
   $("connect-modal").classList.add("hidden");
+  $("note-modal").classList.add("hidden");
 };
+$("note-close").onclick = closeModals;
 $("recap-btn").onclick = openRecap;
 $("recap-btn-2").onclick = openRecap;
 $("recap-close").onclick = closeModals;
@@ -398,6 +408,103 @@ $("connect-go").onclick = async () => {
   });
   $("connect-status").textContent = res.ok ? "connected — reloading…" : "failed: " + res.error;
   if (res.ok) setTimeout(() => location.reload(), 800);
+};
+
+// ---------- the list: to-dos ----------
+const inTopic = (x) => !topicFilter || (x.topic || "General") === topicFilter;
+
+function renderTodos(state) {
+  const root = $("todos");
+  const todos = (state.todos || []).filter(inTopic);
+  const open = todos.filter((t) => !t.done);
+  const done = todos.filter((t) => t.done);
+  root.innerHTML = "";
+  if (!todos.length) root.innerHTML = `<div class="empty">nothing on the list.</div>`;
+  for (const t of [...open, ...done]) {
+    const late = t.due && !t.done && t.due < localDay();
+    const row = document.createElement("label");
+    row.className = "todo" + (t.done ? " done" : "");
+    row.innerHTML =
+      `<input type="checkbox" ${t.done ? "checked" : ""} />` +
+      `<span class="box"></span>` +
+      `<span class="todo-body"><span class="todo-title">${esc(t.title)}</span>` +
+      `<span class="i-meta"><span>${esc(t.topic || "General")}</span>` +
+      (t.due ? `<span class="${late ? "late" : ""}">${late ? "overdue" : "due"} ${esc(t.due)}</span>` : "") +
+      `</span></span>`;
+    row.querySelector("input").onchange = async (e) => {
+      const res = await api(`/api/todos/${t.id}/done`, { method: "POST", body: JSON.stringify({ done: e.target.checked }) });
+      if (res.state) render(res.state);
+      else toast(res.error || "could not update that");
+    };
+    root.appendChild(row);
+  }
+}
+
+$("todo-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const title = $("t-title").value.trim();
+  if (!title) return;
+  const res = await api("/api/todos", {
+    method: "POST",
+    body: JSON.stringify({ title, due: $("t-due").value || null, topic: topicFilter || "General" }),
+  });
+  if (res.state) {
+    $("t-title").value = "";
+    $("t-due").value = "";
+    render(res.state);
+  } else toast(res.error || "could not add that");
+};
+
+// ---------- the notebook: notes ----------
+function renderNotes(state) {
+  const root = $("notes");
+  const notes = (state.notes || []).filter(inTopic);
+  const titleOf = Object.fromEntries(state.items.map((i) => [i.id, i.title]));
+  root.innerHTML = notes.length ? "" : `<div class="empty">no notes yet. press "note" on anything you're learning.</div>`;
+  for (const n of notes) {
+    const card = document.createElement("article");
+    card.className = "note";
+    card.innerHTML =
+      `<h4>${esc(n.title)}</h4>` +
+      (n.text ? `<p>${esc(n.text)}</p>` : "") +
+      `<div class="i-meta"><span>${esc(n.topic || "General")}</span>` +
+      (titleOf[n.itemId] ? `<span class="from">from ${esc(titleOf[n.itemId])}</span>` : "") +
+      (n.createdAt ? `<span>${esc(n.createdAt.slice(0, 10))}</span>` : "") +
+      `</div>`;
+    card.onclick = () => card.classList.toggle("open");
+    root.appendChild(card);
+  }
+}
+
+let noteItem = null;
+function openNote(item = null) {
+  noteItem = item;
+  $("note-for").textContent = item ? `on: ${item.title.slice(0, 48)}` : topicFilter ? `in ${topicFilter}` : "a note";
+  $("note-title").value = "";
+  $("note-text").value = "";
+  $("note-modal").classList.remove("hidden");
+  $("note-title").focus();
+}
+$("note-new").onclick = () => openNote();
+
+$("note-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const title = $("note-title").value.trim();
+  if (!title) return;
+  const res = await api("/api/notes", {
+    method: "POST",
+    body: JSON.stringify({
+      title,
+      text: $("note-text").value,
+      topic: noteItem?.topic || topicFilter || "General",
+      itemId: noteItem?.id || null,
+    }),
+  });
+  if (res.state) {
+    closeModals();
+    toast("note saved");
+    render(res.state);
+  } else toast(res.error || "could not save that");
 };
 
 // ---------- the wall ----------

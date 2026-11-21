@@ -3,7 +3,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const { createDemoStore } = require("./lib/demo");
-const { createNotionStore, provision, extractId } = require("./lib/notion");
+const { createNotionStore, provision, extractId, makeClient } = require("./lib/notion");
 const { computeStats } = require("./lib/stats");
 const { generateRecap } = require("./lib/recap");
 
@@ -13,12 +13,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 let store =
   process.env.NOTION_TOKEN && process.env.NOTION_DB_ID
-    ? createNotionStore(
-        process.env.NOTION_TOKEN,
-        process.env.NOTION_DB_ID,
-        process.env.NOTION_PARENT_PAGE || null,
-        process.env.NOTION_SESSIONS_DB || null
-      )
+    ? createNotionStore(process.env.NOTION_TOKEN, process.env.NOTION_DB_ID, process.env.NOTION_PARENT_PAGE || null, {
+        sessions: process.env.NOTION_SESSIONS_DB || null,
+        todos: process.env.NOTION_TODOS_DB || null,
+        notes: process.env.NOTION_NOTES_DB || null,
+      })
     : createDemoStore();
 
 function persistEnv(vars) {
@@ -37,9 +36,26 @@ function persistEnv(vars) {
   fs.writeFileSync(envPath, content);
 }
 
+// Databases created lazily by the Notion store are remembered across restarts.
+const DB_ENV = { sessions: "NOTION_SESSIONS_DB", todos: "NOTION_TODOS_DB", notes: "NOTION_NOTES_DB" };
+function rememberDbIds() {
+  if (!store.dbIds) return;
+  const fresh = {};
+  for (const [kind, id] of Object.entries(store.dbIds())) {
+    if (id && process.env[DB_ENV[kind]] !== id) fresh[DB_ENV[kind]] = id;
+  }
+  if (Object.keys(fresh).length) persistEnv(fresh);
+}
+
 async function statePayload() {
-  const [items, sessions] = await Promise.all([store.listItems(), store.listSessions()]);
-  return { mode: store.mode, stats: computeStats(items, sessions), items, sessions };
+  rememberDbIds();
+  const [items, sessions, todos, notes] = await Promise.all([
+    store.listItems(),
+    store.listSessions(),
+    store.listTodos(),
+    store.listNotes(),
+  ]);
+  return { mode: store.mode, stats: computeStats(items, sessions), items, sessions, todos, notes };
 }
 
 app.get("/api/config", (req, res) =>
@@ -139,6 +155,38 @@ app.post("/api/sessions", async (req, res) => {
   }
 });
 
+// To-dos and notes: the other two halves of a Student OS.
+app.post("/api/todos", async (req, res) => {
+  try {
+    const { title } = req.body;
+    if (!title || !title.trim()) return res.status(400).json({ error: "title required" });
+    const todo = await store.createTodo({ ...req.body, title: title.trim() });
+    res.json({ todo, state: await statePayload() });
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
+});
+
+app.post("/api/todos/:id/done", async (req, res) => {
+  try {
+    const todo = await store.setTodoDone(req.params.id, !!req.body.done);
+    res.json({ todo, state: await statePayload() });
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
+});
+
+app.post("/api/notes", async (req, res) => {
+  try {
+    const { title, text } = req.body;
+    if (!title || !title.trim()) return res.status(400).json({ error: "title required" });
+    const note = await store.createNote({ ...req.body, title: title.trim(), text: (text || "").trim() });
+    res.json({ note, state: await statePayload() });
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
+});
+
 app.post("/api/recap", async (req, res) => {
   try {
     const items = await store.listItems();
@@ -159,17 +207,17 @@ app.post("/api/connect", async (req, res) => {
       return res.status(400).json({ error: "token and parentPage required" });
     }
     const parentId = extractId(parentPage);
-    const { Client } = require("@notionhq/client");
-    const notion = new Client({ auth: token });
-    const { logId, sessionsId } = await provision(notion, parentId);
+    const { logId, sessionsId, todosId, notesId } = await provision(makeClient(token), parentId);
     persistEnv({
       NOTION_TOKEN: token,
       NOTION_PARENT_PAGE: parentId,
       NOTION_DB_ID: logId,
       NOTION_SESSIONS_DB: sessionsId,
+      NOTION_TODOS_DB: todosId,
+      NOTION_NOTES_DB: notesId,
     });
-    store = createNotionStore(token, logId, parentId, sessionsId);
-    res.json({ ok: true, dbId: logId, sessionsId });
+    store = createNotionStore(token, logId, parentId, { sessions: sessionsId, todos: todosId, notes: notesId });
+    res.json({ ok: true, dbId: logId, sessionsId, todosId, notesId });
   } catch (e) {
     res.status(502).json({ error: e.message });
   }
