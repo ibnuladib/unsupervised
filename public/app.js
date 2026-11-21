@@ -318,3 +318,25 @@ $("connect-go").onclick = async () => {
   render(state);
   await handleCaptureHash();
 })();
+
+// ---------- the wall ----------
+const WALL = [
+  ["pins/battlestation.jpg", "the desk, 2am"],
+  ["pins/rei-tux.jpg", "rei \u00d7 tux"],
+  ["pins/cooper.jpg", "damn fine"],
+  ["pins/torres.jpg", "torres, in the rain"],
+  ["pins/cat.jpg", "lo-fi resident"],
+  ["pins/sky.jpg", "frame still"],
+  ["pins/ds.jpg", "keep on keeping on"],
+  ["pins/peep.jpg", "at your lowest"],
+];
+WALL.forEach(([s]) => { const i = new Image(); i.src = s; });
+(() => {
+  const img = $("wall-img"), cap = $("wall-cap");
+  let wi = 0; cap.textContent = WALL[0][1];
+  setInterval(() => {
+    wi = (wi + 1) % WALL.length;
+    img.style.opacity = 0;
+    setTimeout(() => { img.src = WALL[wi][0]; cap.textContent = WALL[wi][1]; img.style.opacity = 1; }, 850);
+  }, 6500);
+})();
