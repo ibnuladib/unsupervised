@@ -19,7 +19,10 @@ grades; they need a ledger.
   tagged by **topic** (your self-made "courses": AI Infra, PyTorch, Research…)
   and status (**Backlog → Learning → Done**).
 - **Quick-capture**: paste any link (arXiv, YouTube, GitHub, docs) — it fetches the real title and files it under the right type.
-- A quiet stats line: finished this week, in progress, backlog, streak.
+- **Quick-capture digest**: captured links also pull their description/abstract into the item's Notion page as a "why I saved this" note.
+- **Focus sessions**: a 25m chip on any open item starts a live timer; stopping logs the session to a **Sessions database** in Notion (related to the learning-log item).
+- A quiet stats line: finished this week, in progress, backlog, streak, focus minutes — plus a GitHub-style **completion heatmap**.
+- A draggable **[ + unsupervised ] bookmarklet**: capture whatever page you're on without opening the app.
 - **"previously on"** — a weekly, episode-style recap of what you finished,
   what's still open, and what's up next — written back into your Notion
   workspace as a formatted page.

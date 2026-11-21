@@ -40,7 +40,10 @@ function episodeNo(now = new Date()) {
   setInterval(show, 9000);
 })();
 
+let lastState = null;
+
 function render(state) {
+  lastState = state;
   $("mode-dot").classList.toggle("live", state.mode === "notion");
   $("mode-dot").title = state.mode === "notion" ? "synced to notion" : "demo mode";
 
@@ -50,7 +53,10 @@ function render(state) {
     `<b>${s.doneThisWeek}</b> finished this week &nbsp;·&nbsp; ` +
     `<b>${s.learning}</b> in progress &nbsp;·&nbsp; ` +
     `<b>${s.backlog}</b> in backlog` +
-    (s.streak > 1 ? ` &nbsp;·&nbsp; <b>${s.streak}</b>-day streak` : "");
+    (s.streak > 1 ? ` &nbsp;·&nbsp; <b>${s.streak}</b>-day streak` : "") +
+    (s.focusMinWeek ? ` &nbsp;·&nbsp; <b>${s.focusMinWeek}</b>m focus` : "");
+
+  renderHeatmap(state);
 
   const groups = $("groups");
   groups.innerHTML = "";
@@ -90,7 +96,9 @@ function itemRow(item) {
   ]
     .filter(Boolean)
     .join(" · ");
-  body.innerHTML = `<div class="i-title">${title}</div><div class="i-meta">${meta}</div>`;
+  body.innerHTML =
+    `<div class="i-title">${title}</div><div class="i-meta">${meta}</div>` +
+    (item.note ? `<div class="i-note">${esc(item.note.slice(0, 110))}</div>` : "");
 
   const cyc = document.createElement("button");
   cyc.className = "status-btn";
@@ -98,8 +106,130 @@ function itemRow(item) {
   cyc.title = `move to ${NEXT_STATUS[item.status].toLowerCase()}`;
   cyc.onclick = () => setStatus(item.id, NEXT_STATUS[item.status]);
 
-  el.append(check, body, cyc);
+  el.append(check, body);
+  if (item.status !== "Done") {
+    const focus = document.createElement("button");
+    focus.className = "focus-btn" + (session?.itemId === item.id ? " active" : "");
+    focus.textContent = session?.itemId === item.id ? "stop" : "◦ 25m";
+    focus.title = "start a focus session";
+    focus.onclick = () => toggleSession(item);
+    el.appendChild(focus);
+  }
+  el.appendChild(cyc);
   return el;
+}
+
+// ---- heatmap: last 15 weeks of completions ----
+function renderHeatmap(state) {
+  const counts = {};
+  for (const i of state.items) {
+    if (i.status === "Done" && i.completedAt) {
+      const d = i.completedAt.slice(0, 10);
+      counts[d] = (counts[d] || 0) + 1;
+    }
+  }
+  const WEEKS = 15;
+  const today = new Date();
+  const dow = (today.getDay() + 6) % 7; // Mon=0
+  const start = new Date(today);
+  start.setDate(start.getDate() - dow - 7 * (WEEKS - 1));
+
+  const hm = $("heatmap");
+  hm.innerHTML = "";
+  for (let w = 0; w < WEEKS; w++) {
+    const col = document.createElement("div");
+    col.className = "week";
+    for (let d = 0; d < 7; d++) {
+      const day = new Date(start);
+      day.setDate(start.getDate() + w * 7 + d);
+      const key = day.toISOString().slice(0, 10);
+      const cell = document.createElement("div");
+      cell.className = "day";
+      const n = counts[key] || 0;
+      cell.dataset.l = n === 0 ? 0 : Math.min(4, n);
+      cell.title = `${key}: ${n} done`;
+      if (day > today) cell.style.visibility = "hidden";
+      col.appendChild(cell);
+    }
+    hm.appendChild(col);
+  }
+}
+
+// ---- focus sessions ----
+let session = null;
+let timerId = null;
+
+function toggleSession(item) {
+  if (session?.itemId === item.id) return stopSession();
+  if (session) stopSession(true);
+  session = { itemId: item.id, itemTitle: item.title, startedAt: Date.now() };
+  const el = $("session-timer");
+  el.classList.remove("hidden");
+  timerId = setInterval(tickTimer, 1000);
+  tickTimer();
+  if (lastState) render(lastState);
+}
+
+function tickTimer() {
+  const sec = Math.floor((Date.now() - session.startedAt) / 1000);
+  const mm = String(Math.floor(sec / 60)).padStart(2, "0");
+  const ss = String(sec % 60).padStart(2, "0");
+  $("session-timer").textContent = `${mm}:${ss} — ${session.itemTitle.slice(0, 32)}`;
+}
+
+$("session-timer").onclick = () => session && stopSession();
+
+async function stopSession(silent = false) {
+  clearInterval(timerId);
+  const elapsed = Math.max(1, Math.round((Date.now() - session.startedAt) / 60000));
+  const s = session;
+  session = null;
+  $("session-timer").classList.add("hidden");
+  if (!silent) {
+    const res = await api("/api/sessions", {
+      method: "POST",
+      body: JSON.stringify({ itemId: s.itemId, itemTitle: s.itemTitle, minutes: elapsed }),
+    });
+    if (res.state) {
+      toast(`+${elapsed}m focus logged`);
+      render(res.state);
+      return;
+    }
+  }
+  if (lastState) render(lastState);
+}
+
+// ---- toast ----
+function toast(msg) {
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// ---- bookmarklet + capture via hash ----
+$("bm").href =
+  "javascript:window.open('" +
+  location.origin +
+  "/#capture='+encodeURIComponent(location.href),'_blank')";
+
+async function handleCaptureHash() {
+  if (!location.hash.startsWith("#capture=")) return false;
+  const url = decodeURIComponent(location.hash.slice(9));
+  history.replaceState(null, "", location.pathname);
+  toast("capturing link…");
+  const res = await api("/api/capture", {
+    method: "POST",
+    body: JSON.stringify({ url }),
+  });
+  if (res.state) {
+    toast(`filed: ${res.item.title.slice(0, 60)}`);
+    render(res.state);
+  } else {
+    toast("capture failed: " + (res.error || "?"));
+  }
+  return true;
 }
 
 async function setStatus(id, status) {
@@ -186,4 +316,5 @@ $("connect-go").onclick = async () => {
     return;
   }
   render(state);
+  await handleCaptureHash();
 })();

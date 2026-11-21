@@ -16,7 +16,8 @@ let store =
     ? createNotionStore(
         process.env.NOTION_TOKEN,
         process.env.NOTION_DB_ID,
-        process.env.NOTION_PARENT_PAGE || null
+        process.env.NOTION_PARENT_PAGE || null,
+        process.env.NOTION_SESSIONS_DB || null
       )
     : createDemoStore();
 
@@ -37,8 +38,8 @@ function persistEnv(vars) {
 }
 
 async function statePayload() {
-  const items = await store.listItems();
-  return { mode: store.mode, stats: computeStats(items), items };
+  const [items, sessions] = await Promise.all([store.listItems(), store.listSessions()]);
+  return { mode: store.mode, stats: computeStats(items, sessions), items, sessions };
 }
 
 app.get("/api/config", (req, res) =>
@@ -70,7 +71,7 @@ const TYPE_BY_HOST = [
   [/github\.com|gitlab\.com/, "Repo"],
 ];
 
-async function fetchTitle(url) {
+async function fetchMeta(url) {
   const r = await fetch(url, {
     redirect: "follow",
     signal: AbortSignal.timeout(6000),
@@ -78,11 +79,16 @@ async function fetchTitle(url) {
   });
   const html = (await r.text()).slice(0, 300000);
   const pick = (re) => html.match(re)?.[1]?.trim();
-  const title =
-    pick(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i) ||
-    pick(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title/i) ||
-    pick(/<title[^>]*>([^<]+)<\/title>/i);
-  return title ? title.replace(/\s+/g, " ") : null;
+  const meta = (prop) =>
+    pick(new RegExp(`<meta[^>]+property=["']${prop}["'][^>]+content=["']([^"']+)`, "i")) ||
+    pick(new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+property=["']${prop}`, "i")) ||
+    pick(new RegExp(`<meta[^>]+name=["']${prop}["'][^>]+content=["']([^"']+)`, "i")) ||
+    pick(new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+name=["']${prop}`, "i"));
+  const clean = (s) => (s ? s.replace(/\s+/g, " ").trim() : null);
+  return {
+    title: clean(meta("og:title") || pick(/<title[^>]*>([^<]+)<\/title>/i)),
+    note: clean(meta("og:description") || meta("description")),
+  };
 }
 
 // Quick-capture: paste a URL -> fetch its title -> file it under the right type.
@@ -94,8 +100,15 @@ app.post("/api/capture", async (req, res) => {
     }
     const host = new URL(url).hostname.replace(/^www\./, "");
     const type = TYPE_BY_HOST.find(([re]) => re.test(host))?.[1] || "Docs";
-    const title = (await fetchTitle(url).catch(() => null)) || host;
-    const item = await store.createItem({ title, topic, type, target, link: url });
+    const m = await fetchMeta(url).catch(() => ({}));
+    const item = await store.createItem({
+      title: m.title || host,
+      topic,
+      type,
+      target,
+      link: url,
+      note: m.note ? m.note.slice(0, 800) : null,
+    });
     res.json({ item, state: await statePayload() });
   } catch (e) {
     res.status(502).json({ error: e.message });
@@ -110,6 +123,17 @@ app.post("/api/items/:id/status", async (req, res) => {
     }
     const item = await store.setStatus(req.params.id, status);
     res.json({ item, state: await statePayload() });
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
+});
+
+app.post("/api/sessions", async (req, res) => {
+  try {
+    const { itemId, minutes, itemTitle } = req.body;
+    if (!minutes || minutes < 1) return res.status(400).json({ error: "minutes >= 1 required" });
+    const session = await store.addSession({ itemId, minutes, itemTitle });
+    res.json({ session, state: await statePayload() });
   } catch (e) {
     res.status(502).json({ error: e.message });
   }
@@ -137,14 +161,15 @@ app.post("/api/connect", async (req, res) => {
     const parentId = extractId(parentPage);
     const { Client } = require("@notionhq/client");
     const notion = new Client({ auth: token });
-    const dbId = await provision(notion, parentId);
+    const { logId, sessionsId } = await provision(notion, parentId);
     persistEnv({
       NOTION_TOKEN: token,
       NOTION_PARENT_PAGE: parentId,
-      NOTION_DB_ID: dbId,
+      NOTION_DB_ID: logId,
+      NOTION_SESSIONS_DB: sessionsId,
     });
-    store = createNotionStore(token, dbId, parentId);
-    res.json({ ok: true, dbId });
+    store = createNotionStore(token, logId, parentId, sessionsId);
+    res.json({ ok: true, dbId: logId, sessionsId });
   } catch (e) {
     res.status(502).json({ error: e.message });
   }
