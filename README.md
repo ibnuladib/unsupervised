@@ -18,6 +18,7 @@ grades; they need a ledger.
 - One list of everything you're learning — papers, videos, docs, projects —
   tagged by **topic** (your self-made "courses": AI Infra, PyTorch, Research…)
   and status (**Backlog → Learning → Done**).
+- **Quick-capture**: paste any link (arXiv, YouTube, GitHub, docs) — it fetches the real title and files it under the right type.
 - A quiet stats line: finished this week, in progress, backlog, streak.
 - **"previously on"** — a weekly, episode-style recap of what you finished,
   what's still open, and what's up next — written back into your Notion

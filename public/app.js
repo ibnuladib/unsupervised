@@ -112,18 +112,29 @@ async function setStatus(id, status) {
 
 $("add-form").onsubmit = async (e) => {
   e.preventDefault();
-  const res = await api("/api/items", {
+  const raw = $("i-title").value.trim();
+  const isUrl = /^https?:\/\/\S+$/.test(raw);
+  const titleEl = $("i-title");
+  if (isUrl) titleEl.placeholder = "capturing…";
+  const res = await api(isUrl ? "/api/capture" : "/api/items", {
     method: "POST",
-    body: JSON.stringify({
-      title: $("i-title").value,
-      topic: $("i-topic").value,
-      type: $("i-type").value,
-      target: $("i-target").value || null,
-    }),
+    body: JSON.stringify(
+      isUrl
+        ? { url: raw, topic: $("i-topic").value, target: $("i-target").value || null }
+        : {
+            title: raw,
+            topic: $("i-topic").value,
+            type: $("i-type").value,
+            target: $("i-target").value || null,
+          }
+    ),
   });
+  titleEl.placeholder = "what are you learning next?";
   if (res.state) {
     $("i-title").value = "";
     render(res.state);
+  } else if (res.error) {
+    titleEl.value = res.error;
   }
 };
 

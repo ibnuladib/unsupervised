@@ -64,6 +64,44 @@ app.post("/api/items", async (req, res) => {
   }
 });
 
+const TYPE_BY_HOST = [
+  [/arxiv\.org|acm\.org|ieee\.org|openreview\.net/, "Paper"],
+  [/youtube\.com|youtu\.be|vimeo\.com/, "Video"],
+  [/github\.com|gitlab\.com/, "Repo"],
+];
+
+async function fetchTitle(url) {
+  const r = await fetch(url, {
+    redirect: "follow",
+    signal: AbortSignal.timeout(6000),
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; unsupervised/1.0)" },
+  });
+  const html = (await r.text()).slice(0, 300000);
+  const pick = (re) => html.match(re)?.[1]?.trim();
+  const title =
+    pick(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i) ||
+    pick(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title/i) ||
+    pick(/<title[^>]*>([^<]+)<\/title>/i);
+  return title ? title.replace(/\s+/g, " ") : null;
+}
+
+// Quick-capture: paste a URL -> fetch its title -> file it under the right type.
+app.post("/api/capture", async (req, res) => {
+  try {
+    const { url, topic, target } = req.body;
+    if (!url || !/^https?:\/\//.test(url)) {
+      return res.status(400).json({ error: "valid http(s) url required" });
+    }
+    const host = new URL(url).hostname.replace(/^www\./, "");
+    const type = TYPE_BY_HOST.find(([re]) => re.test(host))?.[1] || "Docs";
+    const title = (await fetchTitle(url).catch(() => null)) || host;
+    const item = await store.createItem({ title, topic, type, target, link: url });
+    res.json({ item, state: await statePayload() });
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
+});
+
 app.post("/api/items/:id/status", async (req, res) => {
   try {
     const { status } = req.body;
