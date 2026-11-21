@@ -64,14 +64,16 @@ function render(state) {
   $("mode-label").textContent = live ? "synced to notion" : "demo mode";
 
   const s = state.stats;
-  const readout = (n, label, unit = "", hot = false) =>
-    `<div class="readout${hot ? " hot" : ""}"><b>${n}${unit ? `<small>${unit}</small>` : ""}</b><span>${label}</span></div>`;
-  $("stats").innerHTML =
-    readout(pad(s.doneThisWeek), "finished this week", "", s.doneThisWeek > 0) +
-    readout(pad(s.learning), "in progress") +
-    readout(pad(s.backlog), "in backlog") +
-    readout(s.streak || 0, "streak", s.streak === 1 ? "day" : "days") +
-    readout(s.focusMinWeek || 0, "focus this week", "min");
+  const WORDS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+  const w = (n) => WORDS[n] ?? String(n);
+  const cap = (t) => t[0].toUpperCase() + t.slice(1);
+  const parts = [
+    `<b class="${s.doneThisWeek ? "hot" : ""}">${cap(w(s.doneThisWeek))} finished</b> this week.`,
+    `<b>${cap(w(s.learning))}</b> still open on the desk, <b>${w(s.backlog)}</b> waiting.`,
+  ];
+  if (s.streak > 1) parts.push(`<b>${cap(w(s.streak))} days</b> in a row.`);
+  if (s.focusMinWeek) parts.push(`<b>${s.focusMinWeek} minutes</b> of focus.`);
+  $("stats").innerHTML = `<p class="week-line"><span class="ep">ep. ${pad(episodeNo())}</span>${parts.join(" ")}</p>`;
 
   renderTopics(state);
   renderHeatmap(state);
@@ -547,4 +549,25 @@ const WALL = [
   }
   render(state);
   await handleCaptureHash();
+})();
+
+// ---------- type styles: pick a look, remembered in this browser ----------
+(() => {
+  const NAMES = { 1: "terminal", 2: "title card", 3: "notebook", 4: "case file" };
+  const bar = document.createElement("div");
+  bar.className = "type-pick";
+  const set = (n) => {
+    document.body.dataset.type = n;
+    localStorage.setItem("type", n);
+    bar.innerHTML = "<span>type</span>";
+    for (const k of Object.keys(NAMES)) {
+      const b = document.createElement("button");
+      b.textContent = k + " " + NAMES[k];
+      b.className = k === String(n) ? "on" : "";
+      b.onclick = () => set(k);
+      bar.appendChild(b);
+    }
+  };
+  set(new URLSearchParams(location.search).get("type") || localStorage.getItem("type") || "2");
+  document.body.appendChild(bar);
 })();

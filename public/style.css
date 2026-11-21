@@ -1,10 +1,3 @@
-@font-face { font-family: "Barlow"; font-weight: 400; font-display: swap; src: url(fonts/barlow-400.woff2) format("woff2"); }
-@font-face { font-family: "Barlow"; font-weight: 500; font-display: swap; src: url(fonts/barlow-500.woff2) format("woff2"); }
-@font-face { font-family: "Barlow Condensed"; font-weight: 500; font-display: swap; src: url(fonts/barlowc-500.woff2) format("woff2"); }
-@font-face { font-family: "Barlow Condensed"; font-weight: 600; font-display: swap; src: url(fonts/barlowc-600.woff2) format("woff2"); }
-@font-face { font-family: "Barlow Condensed"; font-weight: 700; font-display: swap; src: url(fonts/barlowc-700.woff2) format("woff2"); }
-@font-face { font-family: "JetBrains Mono"; font-weight: 400 500; font-display: swap; src: url(fonts/jbmono.woff2) format("woff2"); }
-
 :root {
   --bg: #0a0c0b;
   --panel: #111413;
@@ -16,9 +9,9 @@
   --cargo: #e2a93b;
   --moss: #8fae78;
   --red: #d2473c;
-  --body: "Barlow", "Segoe UI", system-ui, sans-serif;
-  --disp: "Barlow Condensed", "Arial Narrow", sans-serif;
-  --mono: "JetBrains Mono", Consolas, monospace;
+  --body: "Source Serif", Georgia, serif;
+  --disp: "Mincho", "Times New Roman", serif;
+  --mono: "Plex Mono", Consolas, monospace;
   --pad: clamp(20px, 4vw, 56px);
 }
 
@@ -465,3 +458,68 @@ textarea::placeholder { color: var(--faint); }
   .capture.slim #t-due { flex: 1; min-width: 0; padding: 8px 0; }
   .i-actions { flex-wrap: wrap; }
 }
+
+/* ---------- this week, as a sentence (replaces the big readouts) ---------- */
+.readouts { display: block; padding: 30px var(--pad) 28px; }
+.week-line { max-width: 62ch; font-size: 21px; line-height: 1.55; color: var(--dim); }
+.week-line b { font-weight: 500; color: var(--text); }
+.week-line b.hot { color: var(--cargo); }
+.week-line .ep { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--cargo); margin-right: 12px; vertical-align: 0.2em; }
+
+/* ---------- type styles: four looks, switchable from the corner ---------- */
+@font-face { font-family: "VT323"; font-display: swap; src: url(fonts/vt323.woff2) format("woff2"); }
+@font-face { font-family: "Plex Mono"; font-weight: 400; font-display: swap; src: url(fonts/plex-400.woff2) format("woff2"); }
+@font-face { font-family: "Plex Mono"; font-weight: 500; font-display: swap; src: url(fonts/plex-500.woff2) format("woff2"); }
+@font-face { font-family: "Mincho"; font-weight: 900; font-display: swap; src: url(fonts/mincho-900.woff2) format("woff2"); }
+@font-face { font-family: "Caveat"; font-weight: 400 700; font-display: swap; src: url(fonts/caveat.woff2) format("woff2"); }
+@font-face { font-family: "Special Elite"; font-display: swap; src: url(fonts/elite.woff2) format("woff2"); }
+@font-face { font-family: "Courier Prime"; font-weight: 400; font-display: swap; src: url(fonts/courier-400.woff2) format("woff2"); }
+@font-face { font-family: "Courier Prime"; font-weight: 700; font-display: swap; src: url(fonts/courier-700.woff2) format("woff2"); }
+@font-face { font-family: "Source Serif"; font-weight: 400 600; font-display: swap; src: url(fonts/serif.woff2) format("woff2"); }
+
+/* 1 — terminal: one monospace everywhere, pixel title */
+body[data-type="1"] { --body: "Plex Mono", Consolas, monospace; --mono: "Plex Mono", Consolas, monospace; --disp: "VT323", monospace; font-size: 15px; }
+body[data-type="1"] .title-card h1 { text-transform: lowercase; letter-spacing: 0; font-weight: 400; font-size: clamp(60px, 12vw, 190px); line-height: 0.8; }
+body[data-type="1"] .title-card h1::after { content: "_"; color: var(--cargo); animation: blink 1.1s steps(2) infinite; }
+body[data-type="1"] h2, body[data-type="1"] .ep-card b, body[data-type="1"] footer button { text-transform: lowercase; letter-spacing: 0.01em; font-weight: 400; }
+body[data-type="1"] h2 { font-size: 36px; }
+body[data-type="1"] h2::before { content: "./"; color: var(--faint); margin-right: -8px; }
+body[data-type="1"] .i-title { font-size: 16px; }
+body[data-type="1"] .week-line { font-size: 16.5px; }
+
+/* 2 — title card: heavy compressed mincho, the evangelion episode card */
+body[data-type="2"] { --body: "Source Serif", Georgia, serif; --mono: "Plex Mono", Consolas, monospace; --disp: "Mincho", "Times New Roman", serif; }
+body[data-type="2"] .title-card h1 { font-weight: 900; letter-spacing: -0.02em; line-height: 0.9; font-size: clamp(50px, 11.5vw, 190px); transform: scaleX(0.74); transform-origin: left bottom; width: 135%; }
+body[data-type="2"] h2, body[data-type="2"] .ep-card b, body[data-type="2"] footer button { font-weight: 900; letter-spacing: -0.01em; transform: scaleX(0.8); transform-origin: left center; }
+body[data-type="2"] h2 { font-size: 30px; width: 125%; }
+body[data-type="2"] h2 i { transform: scaleX(1.25); }
+body[data-type="2"] .i-title, body[data-type="2"] .note h4, body[data-type="2"] .todo-title { font-weight: 600; }
+
+/* 3 — notebook: handwriting for titles and notes, typewriter for the rest */
+body[data-type="3"] { --body: "Courier Prime", "Courier New", monospace; --mono: "Courier Prime", "Courier New", monospace; --disp: "Caveat", cursive; font-size: 15.5px; }
+body[data-type="3"] .title-card h1 { text-transform: lowercase; letter-spacing: -0.01em; font-weight: 700; font-size: clamp(64px, 13vw, 210px); line-height: 0.8; transform: rotate(-2deg); transform-origin: left bottom; }
+body[data-type="3"] .title-card h1::after { content: "."; color: var(--cargo); }
+body[data-type="3"] h2, body[data-type="3"] .ep-card b, body[data-type="3"] footer button { text-transform: lowercase; letter-spacing: 0; font-weight: 700; }
+body[data-type="3"] h2 { font-size: 44px; }
+body[data-type="3"] .note h4 { font-family: var(--disp); font-size: 25px; font-weight: 700; line-height: 1.1; }
+body[data-type="3"] .note p { font-family: var(--disp); font-size: 20px; line-height: 1.3; color: var(--text); }
+body[data-type="3"] .week-line { font-family: var(--disp); font-size: 29px; line-height: 1.25; }
+body[data-type="3"] .i-title { font-size: 16.5px; font-weight: 700; }
+body[data-type="3"] .credit b { font-family: var(--disp); font-size: 24px; letter-spacing: 0; text-transform: lowercase; vertical-align: -0.1em; }
+
+/* 4 — case file: worn typewriter, the twin peaks bureau report */
+body[data-type="4"] { --body: "Courier Prime", "Courier New", monospace; --mono: "Courier Prime", "Courier New", monospace; --disp: "Special Elite", "Courier New", monospace; font-size: 15.5px; }
+body[data-type="4"] .title-card h1 { font-weight: 400; letter-spacing: 0.04em; font-size: clamp(40px, 8.6vw, 140px); line-height: 0.95; }
+body[data-type="4"] h2, body[data-type="4"] .ep-card b, body[data-type="4"] footer button { font-weight: 400; letter-spacing: 0.04em; }
+body[data-type="4"] h2 { font-size: 26px; }
+body[data-type="4"] .i-title { font-size: 16.5px; font-weight: 700; }
+body[data-type="4"] .week-line { font-size: 17px; }
+
+.type-pick {
+  position: fixed; right: 18px; bottom: 18px; z-index: 96; display: flex; align-items: center; gap: 4px;
+  background: #000; border: 1px solid var(--line-2); padding: 6px 8px 6px 12px;
+  font-family: Consolas, monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);
+}
+.type-pick button { font: inherit; padding: 5px 9px; color: var(--dim); border: 1px solid transparent; }
+.type-pick button:hover { color: var(--text); }
+.type-pick button.on { color: #000; background: var(--cargo); }

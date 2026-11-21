@@ -11,7 +11,7 @@ real Notion workspace.
 Built with **Devin Chat** and **Notion** for the Cognition × Notion Student OS
 Hackathon.
 
-![The unsupervised home screen: a widescreen title card over this week's numbers](docs/hero.jpg)
+![The unsupervised home screen: a widescreen title card, with this week summed up in one sentence](docs/hero.jpg)
 
 | | |
 |---|---|
@@ -66,7 +66,8 @@ tables and a calendar.
 | **To-do list** | Small next steps with optional due dates. Tick them off; overdue ones are marked. |
 | **Notebook** | Press `note` on anything you're learning to write down the takeaway. Notes are linked to the item and its topic. |
 | **The shelf** | Each topic with its done/total count and a progress bar. Click a topic to filter the log, the to-do list and the notebook. |
-| **Readouts and heatmap** | Finished this week, in progress, backlog, streak, focus minutes, and 15 weeks of completions. |
+| **This week, in a sentence** | Finished, still open, waiting, streak and focus minutes, written out as one line instead of a dashboard. Plus a heatmap of 15 weeks of completions. |
+| **Four type styles** | Terminal, title card, notebook or case file. Pick one from the corner; the choice is remembered in your browser. |
 | **"Previously on"** | A weekly recap written like the opening of a TV episode: what you finished, what's still open, what's due next. It is saved to Notion as a page. |
 | **Demo mode** | With no Notion credentials the app runs on built-in sample data, so anyone can try every feature immediately. |
 
@@ -168,14 +169,15 @@ restarts.
 
 | Step | Do this | Expect |
 |---|---|---|
-| 1 | Open the page | The title card, this week's numbers, the log, topics and heatmap |
+| 1 | Open the page | The title card, this week's sentence, the log, topics and heatmap |
 | 2 | Paste `https://arxiv.org/abs/2307.08691` into the capture bar and press **add** | A new *Paper* under "up next" with the paper's real title and abstract |
-| 3 | Click an item's status button | It moves Backlog → Learning → Done, and the numbers, topic bars and heatmap update |
+| 3 | Click an item's status button | It moves Backlog → Learning → Done, and the sentence, topic bars and heatmap update |
 | 4 | Click **focus** on an open item, wait a few seconds, click it again | "+1m focus logged", and focus minutes go up |
 | 5 | Click a topic under **the shelf** | The log shows only that topic; **clear** brings everything back |
 | 6 | Under **the list**, type a to-do and press **add**, then tick it | It appears, then moves to the bottom struck through |
 | 7 | Click **note** on any item, fill it in and save | A new card in **the notebook**, linked to that item |
 | 8 | Click **previously on** | This week's recap |
+| 9 | Click a style in the **type** bar, bottom right | The whole page changes typeface |
 
 ### Connect your own Notion (optional)
 
@@ -279,12 +281,28 @@ The store sends its requests on Notion API version `2022-06-28`.
 
 ![The wall: a strip of images from my Pinterest board](docs/wall.jpg)
 
-The interface is personal on purpose. It is styled as a film title card, drawn
-from my own Pinterest board: a letterboxed still, a tracked condensed title, a
-single amber accent, and a strip of the images I keep coming back to. The fonts
-(Barlow, Barlow Condensed and JetBrains Mono, all under the SIL Open Font
-License) are bundled in the repository, so the page makes no third-party
-requests.
+The interface is personal on purpose. It is drawn from my own Pinterest board:
+a letterboxed film still, a single amber accent, and a strip of the images I
+keep coming back to. There are no dashboard tiles; the week is summed up in a
+sentence.
+
+The typeface is a choice, with four styles that each come from something on
+that board:
+
+| Style | From | Looks like |
+|---|---|---|
+| **Title card** (default) | Evangelion episode cards | Heavy compressed serif capitals |
+| **Terminal** | The CRT battlestation, Linux | A pixel title with a blinking cursor, monospace throughout |
+| **Notebook** | A paper notebook | Handwritten titles and notes, typewriter for the rest |
+| **Case file** | Twin Peaks | Worn typewriter headings, like a Bureau report |
+
+| Terminal | Notebook | Case file |
+|---|---|---|
+| ![Terminal style](docs/type-1.jpg) | ![Notebook style](docs/type-3.jpg) | ![Case file style](docs/type-4.jpg) |
+
+The fonts are bundled in the repository, so the page makes no third-party
+requests: Noto Serif JP, Source Serif 4, IBM Plex Mono, VT323, Caveat and
+Courier Prime (SIL Open Font License) and Special Elite (Apache License 2.0).
 
 The images in `public/pins/` and `assets/` are from my Pinterest board and
 belong to their original creators. They are included for this personal
