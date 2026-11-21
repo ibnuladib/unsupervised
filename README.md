@@ -1,108 +1,146 @@
 # unsupervised.
 
-> learning, unsupervised — a student OS for what you teach yourself.
+> learning, unsupervised — a Student OS for what you teach yourself.
 
-Built at the **Cognition × Notion Student OS Hackathon** with Devin.
+Built at the **Cognition × Notion Student OS Hackathon** using **Devin Chat** and **Notion**.
 
-## The problem
+- **Repo:** https://github.com/ibnuladib/unsupervised
+- **Live Notion workspace:** [unsupervised. on Notion](https://app.notion.com/p/41ffba39bd0681e79e3fc977f8e56169)
+- **Try it:** `npm install && npm start` → http://localhost:3000 (demo mode, no Notion account needed)
 
-Notion's Student OS organizes *classes* — but a lot of real learning happens
-outside any course. Papers half-read, videos queued, side projects "almost
-done", scattered across tabs and apps. Self-directed learners don't need
-grades; they need a ledger.
+---
 
-## What it does
+## 1. What the project does and the problem it solves
 
-**unsupervised** is a minimal learning tracker with a cinematic streak:
+**The problem.** Notion's Student OS organizes *classes*. But for a lot of
+students, the learning that matters most for their career happens outside any
+course: papers half-read, lecture videos queued, docs bookmarked, side projects
+"almost done" — scattered across browser tabs with no deadline, no syllabus and
+nobody keeping track. I'm teaching myself AI infrastructure, PyTorch and AI
+research this way, and there is no home for it.
 
-- One list of everything you're learning — papers, videos, docs, projects —
-  tagged by **topic** (your self-made "courses": AI Infra, PyTorch, Research…)
-  and status (**Backlog → Learning → Done**).
-- **Quick-capture**: paste any link (arXiv, YouTube, GitHub, docs) — it fetches the real title and files it under the right type.
-- **Quick-capture digest**: captured links also pull their description/abstract into the item's Notion page as a "why I saved this" note.
-- **Focus sessions**: a 25m chip on any open item starts a live timer; stopping logs the session to a **Sessions database** in Notion (related to the learning-log item).
-- A quiet stats line: finished this week, in progress, backlog, streak, focus minutes — plus a GitHub-style **completion heatmap**.
-- A draggable **[ + unsupervised ] bookmarklet**: capture whatever page you're on without opening the app.
-- **"previously on"** — a weekly, episode-style recap of what you finished,
-  what's still open, and what's up next — written back into your Notion
-  workspace as a formatted page.
+**The solution.** **unsupervised** is a Student OS for self-directed learning: a
+small web app backed by a real Notion workspace, where your self-made topics are
+your courses and everything you're learning is tracked in one ledger.
 
-All state lives in a real **Notion database** mirroring the Student OS model
-(resources grouped by topic instead of courses). No Notion account? It boots
-in **demo mode** so anyone can try it instantly.
+What it does:
 
-## How it maps to Student OS
+- **One learning log.** Papers, videos, docs, repos and projects, tagged by
+  **topic** (AI Infra, PyTorch, AI Research…) and moved through
+  **Backlog → Learning → Done**, with optional target dates.
+- **Quick capture.** Paste any link (arXiv, YouTube, GitHub, docs) — the app
+  fetches the real title, classifies the type, and files it.
+- **Auto-digest.** Captured links also pull their abstract/description, shown
+  in the app and written into the item's Notion page as a note.
+- **Bookmarklet.** Drag `[ + unsupervised ]` to the bookmarks bar and capture
+  the page you're on in one click.
+- **Focus sessions.** A `25m` chip on any open item starts a timer; stopping it
+  logs the session to a **Sessions database** in Notion, related to the item.
+- **Progress at a glance.** Finished this week, in progress, backlog, streak,
+  focus minutes, and a GitHub-style completion heatmap.
+- **"previously on".** A weekly episode-style recap of what you finished, what's
+  still open and what's next — written back into Notion as a page.
+- **Demo mode.** With no Notion credentials it boots on seeded data, so anyone
+  can try it immediately.
+
+## 2. How I used Devin Chat
+
+The whole project — idea, Notion workspace, code, repo — was built with Devin
+Chat in one hackathon session. Concretely:
+
+- **Planning and pivots.** Devin read the hackathon brief and the Student OS
+  documentation, proposed concepts, and rebuilt the project when I redirected
+  it (from a gamified planner to this focused learning tracker).
+- **Notion via MCP.** Devin connected the **Notion MCP server**
+  (`.devin/mcp_config.local.json`, OAuth) and used its tools directly from chat:
+  `notion-create-pages`, `notion-create-database`, `notion-create-view`,
+  `notion-update-page`, `notion-create-file-upload`. That provisioned the live
+  workspace — both databases, the relation and rollup properties, the
+  kanban/grouped/calendar views, seeded items, the page layout, and images
+  uploaded into Notion's own storage.
+- **Writing the app.** Devin wrote every file: the Express server, the Notion
+  API store (`@notionhq/client`), the demo store, the stats engine, the recap
+  generator, the capture/digest service, and the vanilla JS/CSS frontend.
+- **Testing.** Between iterations Devin ran syntax checks and curl smoke tests
+  against the running server (capture, sessions, recap), and verified that a
+  fresh clone of this repo installs and boots.
+- **Shipping.** Devin created this public repo with the `gh` CLI and committed
+  and pushed each change.
+
+## 3. How it incorporates Notion Student OS
 
 Student OS is "one home for your classes, assignments, notes, and to-dos."
-**unsupervised** applies that model to self-directed learning:
+**unsupervised** keeps that model and swaps the contents for self-directed
+learning:
 
-| Student OS | unsupervised |
+| Student OS concept | unsupervised |
 |---|---|
-| Courses | **Topics** (AI Infra, PyTorch, AI Research — a `topics` database with relations + %done rollups) |
-| Assignments | **Learning items** (papers, videos, docs, projects — `Status: Backlog → Learning → Done`, `Target` = deadline) |
-| Dashboard page | The `unsupervised.` Notion page: learning log + topics + recaps under one roof |
-| "Always know what's next" | Stats line, target dates, and the weekly "previously on" recap |
+| Courses | **Topics** database (AI Infra, PyTorch, AI Research…) |
+| Assignments / resources | **Learning log** database — `Topic`, `Type`, `Status`, `Target`, `Link`, `Completed` |
+| Course progress | **Relation** topics → items, with **rollups** for total and done per topic |
+| Dashboard / homepage | The `unsupervised.` Notion page: learning log, topics and recaps in one place |
+| "Always know what's next" | Target dates, the stats line, and the weekly "previously on" recap |
+| Study time | **Sessions** database, each row related to the item studied |
 
-The Notion workspace itself was built with the full feature set: a database
-with multiple views (kanban board, topic-grouped table, target calendar), a
-related database with rollups, page covers/icons, callouts, toggles, and
-linked sub-pages — all provisioned programmatically.
+Notion features used in the workspace: related databases, rollups, multiple
+database views (kanban board by status, table grouped by topic, calendar by
+target date), page cover and icon, toggle and bookmark blocks, uploaded images,
+and recap sub-pages.
 
-## How Devin was used
+How the app talks to Notion (`lib/notion.js`, official `@notionhq/client`):
 
-The entire project was built inside **Devin** in a single hackathon session:
+- **connect notion** (`POST /api/connect`) provisions the learning-log and
+  sessions databases under any page you share with your integration.
+- The app reads items from the Notion database and writes new items and status
+  changes back — tick something off in Notion and it shows as done in the app.
+- Focus sessions and weekly recaps are written to Notion as rows and pages.
 
-- **Connected the Notion MCP server** to Devin (`.devin/mcp_config.json`) and
-  authenticated with OAuth — then used `notion-create-database`,
-  `notion-create-view`, `notion-create-pages`, and `notion-update-page` to
-  provision the live workspace: both databases, relation + rollup properties,
-  kanban/grouped/calendar views, seeded items, and the personalized page
-  layout (cover, callouts, image columns, toggles).
-- **Wrote the application end-to-end**: Express server, Notion API store
-  (`@notionhq/client`), demo-mode store, stats engine, recap generator,
-  quick-capture service, and the vanilla-JS frontend — all through Devin's
-  edit/exec tools with syntax checks and live curl smoke tests between
-  iterations.
-- **Shipped it**: `gh` CLI repo creation, commits, and pushes — all from the
-  same session.
+## 4. How to run and test it
 
-## How it uses Notion
-
-- `POST /api/connect` provisions a **"unsupervised — learning log"** database under
-  any page shared with your integration (Topic, Type, Status, Target, Link,
-  Completed).
-- Items sync bidirectionally with that database via `@notionhq/client` —
-  check something off in Notion and it shows done in the app.
-- "previously on" recaps are written as formatted Notion pages under the same
-  parent page.
-
-## Run it
+Requires **Node.js 18+**.
 
 ```bash
+git clone https://github.com/ibnuladib/unsupervised
+cd unsupervised
 npm install
-npm start          # http://localhost:3000 — demo mode, zero setup
+npm start          # http://localhost:3000
 ```
 
-### Connect real Notion
+With no `.env`, the app starts in **demo mode** on seeded data. Nothing else to
+configure.
 
-1. Create an integration at https://www.notion.so/profile/integrations → copy
+### Test it in a minute
+
+1. Open http://localhost:3000 — you'll see the learning log, stats and heatmap.
+2. **Capture:** paste `https://arxiv.org/abs/2307.08691` into the input and
+   press *add*. It files itself as a *Paper* with its real title and abstract.
+3. **Progress:** click an item's status pill to move it Backlog → Learning →
+   Done, or tick its checkbox. The stats line and heatmap update.
+4. **Focus:** click `◦ 25m` on an open item, then click the timer at the top to
+   stop. Focus minutes go up.
+5. **Recap:** click **previously on** for this week's recap.
+
+### Connect your own Notion (optional)
+
+1. Create an integration at https://www.notion.so/profile/integrations and copy
    the token (`ntn_…`).
-2. Create a Notion page → **…** → *Connections* → add your integration →
-   copy the page link.
-3. Click **connect notion** in the app and paste both — or set `NOTION_TOKEN`,
-   `NOTION_PARENT_PAGE`, `NOTION_DB_ID` in `.env` (see `.env.example`).
+2. Create a Notion page → **…** → *Connections* → add the integration → copy
+   the page link.
+3. Click **connect notion** in the app and paste both. The databases are created
+   for you. (Or set `NOTION_TOKEN`, `NOTION_PARENT_PAGE`, `NOTION_DB_ID` in
+   `.env` — see `.env.example`.)
 
-## Live workspace
+Items, sessions and recaps now live in your Notion workspace.
 
-The author's real instance: [unsupervised. on Notion](https://app.notion.com/p/41ffba39bd0681e79e3fc977f8e56169) — learning log + topics rollups + kanban/calendar views + filed recaps.
+---
 
 ## Stack
 
-Node.js · Express · @notionhq/client · Notion MCP server · vanilla JS/CSS
-(Space Grotesk + IBM Plex Mono, film-grain dark theme — no build step)
+Node.js · Express · `@notionhq/client` · Notion MCP server · vanilla JS/CSS (no
+build step)
 
 ## Roadmap
 
-- Spaced-repetition resurfacing: backlog items you keep skipping come back up
+- Spaced-repetition resurfacing for backlog items that keep getting skipped
 - Notion Calendar sync for target dates
-- A "notes" field per item, filed under the recap page each week
+- A notes field per item, collected under each weekly recap
