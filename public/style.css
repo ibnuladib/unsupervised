@@ -298,3 +298,108 @@ footer {
 .now-playing:hover { color: var(--text); }
 
 .recap-line { margin: 0 0 30px; }
+
+/* ===== notion-page anatomy ===== */
+
+/* floating toolbar over the cover, like notion's top-right actions */
+.topbar {
+  position: absolute; top: 16px; right: 22px; z-index: 10;
+  display: flex; gap: 18px; align-items: center;
+}
+.topbar .link { text-shadow: 0 1px 6px rgba(0,0,0,0.8); color: #cfc9bc; }
+.topbar .link:hover { color: #fff; }
+
+.cover { height: 280px; border-bottom: none; }
+.cover img { filter: grayscale(0.35) sepia(0.18) brightness(0.8) contrast(0.98); }
+
+/* page icon + title, notion-style */
+main { padding-top: 0; }
+.page-icon {
+  font-size: 72px; line-height: 1; margin: -46px 0 4px;
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.5)); position: relative; z-index: 2;
+}
+.page-title {
+  font-size: 38px; font-weight: 700; letter-spacing: -0.5px;
+  margin: 0 0 14px; color: var(--text);
+}
+
+/* notion quote block */
+.epigraph {
+  border-left: 3px solid var(--text); padding: 2px 0 2px 14px;
+  margin: 0 0 22px; font-size: 15.5px; line-height: 1.65; color: var(--dim);
+  font-style: normal;
+}
+.epigraph .credit { text-transform: none; letter-spacing: 1px; font-size: 11px; }
+
+/* notion h2 — real headings, not tiny labels */
+.section {
+  font-family: var(--serif); font-size: 20px; font-weight: 600;
+  letter-spacing: 0; color: var(--text); text-transform: none;
+  margin: 44px 0 4px;
+}
+.section::after { display: none; }
+
+/* notion toggle */
+.rules summary {
+  font-family: var(--serif); font-size: 15px; color: var(--text);
+  padding: 5px 8px; margin-left: -8px; border-radius: 4px;
+}
+.rules summary:hover { background: rgba(255,255,255,0.045); }
+.rules ol { margin-top: 6px; font-size: 15px; line-height: 2; }
+
+/* notion bookmark card */
+.bookmark {
+  display: flex; flex-direction: column; gap: 3px;
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: 10px 14px; text-decoration: none; flex: 1; min-width: 220px;
+  background: var(--surface);
+}
+.bookmark:hover { background: rgba(255,255,255,0.03); }
+.bm-title { font-size: 14px; color: var(--text); }
+.bm-url { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.room-row { align-items: stretch; margin: 10px 0 6px; gap: 20px; }
+.rules { flex: 1; }
+
+/* notion callout */
+.callout {
+  display: flex; gap: 12px; align-items: baseline;
+  background: var(--surface); border-radius: 6px; padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.callout-icon { font-size: 15px; }
+.callout .stats { margin-bottom: 0; }
+
+/* notion database rows */
+.item { padding: 10px 8px; margin: 0 -8px; border-radius: 4px; border-bottom: 1px solid var(--line); }
+.item:hover { background: rgba(255,255,255,0.028); }
+.i-title { font-size: 15.5px; }
+.i-meta { display: flex; gap: 6px; align-items: center; margin-top: 5px; }
+
+/* square notion checkbox */
+.check { width: 16px; height: 16px; border-radius: 3px; top: 3px; }
+.check.learning::after { display: none; }
+.check.learning { border-color: var(--accent); background: rgba(168,180,144,0.15); }
+.item.done .check::after {
+  content: "✓"; inset: 0; background: none; opacity: 1;
+  color: var(--accent); font-size: 11px;
+  display: grid; place-items: center; border-radius: 0;
+}
+
+/* notion select pills */
+.pill {
+  font-family: var(--serif); font-size: 11.5px; line-height: 1;
+  padding: 3px 8px; border-radius: 10px; letter-spacing: 0;
+}
+.p-type { background: rgba(255,255,255,0.07); color: #b0a894; }
+.p-topic { background: rgba(207,168,106,0.16); color: #d3b586; }
+.status-btn.pill {
+  text-transform: none; font-size: 11.5px; letter-spacing: 0;
+  padding: 3px 8px; border-radius: 10px; border: none;
+}
+.p-learning { background: rgba(107,141,190,0.2); color: #8fb3d9; }
+.p-backlog { background: rgba(255,255,255,0.08); color: #a39a8a; }
+.p-done { background: rgba(168,180,144,0.2); color: var(--accent); }
+.meta-date { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+
+/* wall, taller like a notion image gallery */
+.wall-frame { height: 240px; border-radius: 6px; border: none; }

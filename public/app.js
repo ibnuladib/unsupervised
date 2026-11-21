@@ -89,19 +89,16 @@ function itemRow(item) {
   const title = item.link
     ? `<a href="${esc(item.link)}" target="_blank" rel="noopener">${esc(item.title)}</a>`
     : esc(item.title);
-  const meta = [
-    item.type,
-    item.topic ? `<em>${esc(item.topic)}</em>` : null,
-    item.target ? `by ${item.target}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const meta =
+    `<span class="pill p-type">${item.type}</span>` +
+    (item.topic ? `<span class="pill p-topic">${esc(item.topic)}</span>` : "") +
+    (item.target ? `<span class="meta-date">by ${item.target}</span>` : "");
   body.innerHTML =
     `<div class="i-title">${title}</div><div class="i-meta">${meta}</div>` +
     (item.note ? `<div class="i-note">${esc(item.note.slice(0, 110))}</div>` : "");
 
   const cyc = document.createElement("button");
-  cyc.className = "status-btn";
+  cyc.className = "status-btn pill p-" + item.status.toLowerCase();
   cyc.textContent = item.status;
   cyc.title = `move to ${NEXT_STATUS[item.status].toLowerCase()}`;
   cyc.onclick = () => setStatus(item.id, NEXT_STATUS[item.status]);

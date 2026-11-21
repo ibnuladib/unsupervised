@@ -15,21 +15,22 @@
 <body>
   <div class="grain"></div>
 
-  <header>
-    <div class="wordmark">unsupervised</div>
-    <nav>
-      <span id="mode-dot" title="storage mode"></span>
-      <span id="session-timer" class="hidden"></span>
-      <button id="recap-btn" class="link">previously on</button>
-      <button id="connect-btn" class="link">connect notion</button>
-    </nav>
-  </header>
+  <nav class="topbar">
+    <span id="mode-dot" title="storage mode"></span>
+    <span id="session-timer" class="hidden"></span>
+    <button id="recap-btn" class="link">previously on</button>
+    <button id="connect-btn" class="link">connect notion</button>
+  </nav>
 
   <div class="cover"><img src="pins/ds.jpg" alt="" /></div>
 
   <main>
-    <p class="epigraph"><i>keep on keeping on.</i></p>
-    <p class="tagline">a self-directed study<br /><span class="credit">written &amp; directed by ibnul</span></p>
+    <div class="page-icon">🎞️</div>
+    <h1 class="page-title">unsupervised.</h1>
+    <blockquote class="epigraph">
+      <i>keep on keeping on.</i> — a self-directed study ·
+      <span class="credit">written &amp; directed by ibnul</span>
+    </blockquote>
 
     <div class="room-row">
       <details class="rules">
@@ -41,7 +42,10 @@
           <li>the backlog is a museum: visit, don't live there</li>
         </ol>
       </details>
-      <a class="now-playing" href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" rel="noopener">now spinning ↗ lofi girl</a>
+      <a class="bookmark" href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" rel="noopener">
+        <span class="bm-title">▶ lofi girl — beats to relax/study to</span>
+        <span class="bm-url">youtube.com</span>
+      </a>
     </div>
 
     <h2 class="section">the desk</h2>
@@ -60,7 +64,7 @@
     <div id="groups"></div>
 
     <h2 class="section">the shelf</h2>
-    <div id="stats" class="stats"></div>
+    <div class="callout"><span class="callout-icon">📈</span><div id="stats" class="stats"></div></div>
     <div id="heatmap" class="heatmap" title="completions per day"></div>
     <div class="hint">drag <a id="bm" href="#">[ + unsupervised ]</a> to your bookmarks bar — capture any page in one click</div>
 
