@@ -10,12 +10,43 @@ function esc(s) {
 
 const NEXT_STATUS = { Backlog: "Learning", Learning: "Done", Done: "Backlog" };
 
+const FOOTER_LINES = [
+  "keep on keeping on.",
+  "get in the repo, ibnul.",
+  "damn fine studying.",
+  "the owls are not what they seem.",
+  "tux was there for you at your lowest.",
+  "the compounding is the point.",
+  "same desk, slightly further along.",
+];
+
+// Week of the year as episode number — this semester is a season.
+function episodeNo(now = new Date()) {
+  const start = new Date(now.getFullYear(), 0, 1);
+  return Math.floor((now - start) / 604800000) + 1;
+}
+
+(function cycleFooter() {
+  const el = $("footer-line");
+  let i = Math.floor(Math.random() * FOOTER_LINES.length);
+  const show = () => {
+    el.parentElement.style.opacity = 0;
+    setTimeout(() => {
+      el.textContent = FOOTER_LINES[i++ % FOOTER_LINES.length];
+      el.parentElement.style.opacity = 1;
+    }, 600);
+  };
+  el.textContent = FOOTER_LINES[i++ % FOOTER_LINES.length];
+  setInterval(show, 9000);
+})();
+
 function render(state) {
   $("mode-dot").classList.toggle("live", state.mode === "notion");
   $("mode-dot").title = state.mode === "notion" ? "synced to notion" : "demo mode";
 
   const s = state.stats;
   $("stats").innerHTML =
+    `ep. ${String(episodeNo()).padStart(2, "0")} &nbsp;·&nbsp; ` +
     `<b>${s.doneThisWeek}</b> finished this week &nbsp;·&nbsp; ` +
     `<b>${s.learning}</b> in progress &nbsp;·&nbsp; ` +
     `<b>${s.backlog}</b> in backlog` +
