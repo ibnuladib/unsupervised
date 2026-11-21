@@ -28,12 +28,40 @@ All state lives in a real **Notion database** mirroring the Student OS model
 (resources grouped by topic instead of courses). No Notion account? It boots
 in **demo mode** so anyone can try it instantly.
 
+## How it maps to Student OS
+
+Student OS is "one home for your classes, assignments, notes, and to-dos."
+**unsupervised** applies that model to self-directed learning:
+
+| Student OS | unsupervised |
+|---|---|
+| Courses | **Topics** (AI Infra, PyTorch, AI Research — a `topics` database with relations + %done rollups) |
+| Assignments | **Learning items** (papers, videos, docs, projects — `Status: Backlog → Learning → Done`, `Target` = deadline) |
+| Dashboard page | The `unsupervised.` Notion page: learning log + topics + recaps under one roof |
+| "Always know what's next" | Stats line, target dates, and the weekly "previously on" recap |
+
+The Notion workspace itself was built with the full feature set: a database
+with multiple views (kanban board, topic-grouped table, target calendar), a
+related database with rollups, page covers/icons, callouts, toggles, and
+linked sub-pages — all provisioned programmatically.
+
 ## How Devin was used
 
-Designed and built end-to-end inside **Devin** during the hackathon —
-data model, Notion API layer, recap generator, and the interface. The Notion
-MCP server was connected to Devin for live workspace access during
-development.
+The entire project was built inside **Devin** in a single hackathon session:
+
+- **Connected the Notion MCP server** to Devin (`.devin/mcp_config.json`) and
+  authenticated with OAuth — then used `notion-create-database`,
+  `notion-create-view`, `notion-create-pages`, and `notion-update-page` to
+  provision the live workspace: both databases, relation + rollup properties,
+  kanban/grouped/calendar views, seeded items, and the personalized page
+  layout (cover, callouts, image columns, toggles).
+- **Wrote the application end-to-end**: Express server, Notion API store
+  (`@notionhq/client`), demo-mode store, stats engine, recap generator,
+  quick-capture service, and the vanilla-JS frontend — all through Devin's
+  edit/exec tools with syntax checks and live curl smoke tests between
+  iterations.
+- **Shipped it**: `gh` CLI repo creation, commits, and pushes — all from the
+  same session.
 
 ## How it uses Notion
 
@@ -67,8 +95,8 @@ The author's real instance: [unsupervised. on Notion](https://app.notion.com/p/4
 
 ## Stack
 
-Node.js · Express · @notionhq/client · vanilla JS/CSS (EB Garamond + IBM Plex
-Mono, film-grain dark theme — no build step)
+Node.js · Express · @notionhq/client · Notion MCP server · vanilla JS/CSS
+(Space Grotesk + IBM Plex Mono, film-grain dark theme — no build step)
 
 ## Roadmap
 
