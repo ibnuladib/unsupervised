@@ -7,7 +7,7 @@
   --faint: #5c554a;
   --accent: #a8b490;
   --amber: #cfa86a;
-  --serif: "EB Garamond", Georgia, "Times New Roman", serif;
+  --serif: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", "Cascadia Code", Consolas, monospace;
 }
 
@@ -33,7 +33,7 @@ header {
   max-width: 720px; margin: 0 auto;
 }
 .wordmark {
-  font-size: 26px; font-style: italic; letter-spacing: 0.5px; color: var(--text);
+  font-size: 26px; letter-spacing: 1px; font-weight: 300; color: var(--text);
 }
 .wordmark::after { content: "."; color: var(--accent); }
 nav { display: flex; gap: 18px; align-items: center; }
@@ -54,7 +54,7 @@ nav { display: flex; gap: 18px; align-items: center; }
 main { max-width: 720px; margin: 0 auto; padding: 0 34px 80px; }
 
 .tagline {
-  color: var(--dim); font-style: italic; font-size: 16px;
+  color: var(--dim); font-size: 15px;
   margin: 6px 0 26px;
 }
 
@@ -73,7 +73,7 @@ input, select {
   background: transparent; border: none; border-bottom: 1px solid var(--line);
   color: var(--text); padding: 8px 2px; font-size: 15px; font-family: var(--serif);
 }
-#i-title { flex: 2; min-width: 220px; font-style: italic; }
+#i-title { flex: 2; min-width: 220px; }
 #i-topic { flex: 1; min-width: 120px; }
 select, input[type="date"] {
   font-family: var(--mono); font-size: 12px; color: var(--dim);
@@ -151,7 +151,7 @@ select option { background: var(--surface); }
 }
 .modal-head {
   display: flex; justify-content: space-between; align-items: baseline;
-  margin-bottom: 18px; font-style: italic; font-size: 15px; color: var(--dim);
+  margin-bottom: 18px; font-size: 15px; color: var(--dim);
 }
 #recap-text {
   white-space: pre-wrap; font-family: var(--serif);

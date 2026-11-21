@@ -1,5 +1,5 @@
 {
-  "name": "syllabus",
+  "name": "unsupervised",
   "version": "1.0.0",
   "description": "A quiet student OS for self-directed learning, synced to Notion",
   "main": "server.js",

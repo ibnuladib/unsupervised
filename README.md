@@ -1,6 +1,6 @@
-# syllabus
+# unsupervised.
 
-> a quiet student OS for the things you teach yourself.
+> learning, unsupervised — a student OS for what you teach yourself.
 
 Built at the **Cognition × Notion Student OS Hackathon** with Devin.
 
@@ -13,7 +13,7 @@ grades; they need a ledger.
 
 ## What it does
 
-**syllabus** is a minimal learning tracker with a cinematic streak:
+**unsupervised** is a minimal learning tracker with a cinematic streak:
 
 - One list of everything you're learning — papers, videos, docs, projects —
   tagged by **topic** (your self-made "courses": AI Infra, PyTorch, Research…)
@@ -36,7 +36,7 @@ development.
 
 ## How it uses Notion
 
-- `POST /api/connect` provisions a **"syllabus — learning log"** database under
+- `POST /api/connect` provisions a **"unsupervised — learning log"** database under
   any page shared with your integration (Topic, Type, Status, Target, Link,
   Completed).
 - Items sync bidirectionally with that database via `@notionhq/client` —

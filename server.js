@@ -114,5 +114,5 @@ app.post("/api/connect", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
-  console.log(`syllabus running at http://localhost:${PORT} [${store.mode} mode]`)
+  console.log(`unsupervised running at http://localhost:${PORT} [${store.mode} mode]`)
 );
