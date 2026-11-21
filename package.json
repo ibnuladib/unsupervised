@@ -1,0 +1,19 @@
+{
+  "name": "syllabus",
+  "version": "1.0.0",
+  "description": "A quiet student OS for self-directed learning, synced to Notion",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@notionhq/client": "^5.31.1",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0"
+  }
+}
