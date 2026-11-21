@@ -34,7 +34,7 @@ What it does:
   in the app and written into the item's Notion page as a note.
 - **Bookmarklet.** Drag `[ + unsupervised ]` to the bookmarks bar and capture
   the page you're on in one click.
-- **Focus sessions.** A `25m` chip on any open item starts a timer; stopping it
+- **Focus sessions.** A `focus` button on any open item starts a timer; stopping it
   logs the session to a **Sessions database** in Notion, related to the item.
 - **Progress at a glance.** Finished this week, in progress, backlog, streak,
   focus minutes, and a GitHub-style completion heatmap.
@@ -114,11 +114,12 @@ configure.
 1. Open http://localhost:3000 — you'll see the learning log, stats and heatmap.
 2. **Capture:** paste `https://arxiv.org/abs/2307.08691` into the input and
    press *add*. It files itself as a *Paper* with its real title and abstract.
-3. **Progress:** click an item's status pill to move it Backlog → Learning →
-   Done, or tick its checkbox. The stats line and heatmap update.
-4. **Focus:** click `◦ 25m` on an open item, then click the timer at the top to
-   stop. Focus minutes go up.
-5. **Recap:** click **previously on** for this week's recap.
+3. **Progress:** click an item's status button to move it Backlog → Learning →
+   Done. The readouts, topic progress bars and heatmap update.
+4. **Focus:** click `focus` on an open item, then click it again (it now shows
+   the running time) to stop. Focus minutes go up.
+5. **Filter:** click a topic under *the shelf* to show only that topic.
+6. **Recap:** click **previously on** for this week's recap.
 
 ### Connect your own Notion (optional)
 
@@ -137,7 +138,8 @@ Items, sessions and recaps now live in your Notion workspace.
 ## Stack
 
 Node.js · Express · `@notionhq/client` · Notion MCP server · vanilla JS/CSS (no
-build step)
+build step) · self-hosted Barlow, Barlow Condensed and JetBrains Mono (SIL Open
+Font License)
 
 ## Roadmap
 

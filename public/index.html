@@ -3,101 +3,128 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>unsupervised — a quiet place for what you're learning</title>
+  <title>unsupervised — a self-directed study</title>
+  <link rel="preload" href="fonts/barlowc-500.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="grain"></div>
 
-  <nav class="topbar">
-    <span id="mode-dot" title="storage mode"></span>
-    <span id="session-timer" class="hidden"></span>
-    <button id="recap-btn" class="link">previously on</button>
-    <button id="connect-btn" class="link">connect notion</button>
-  </nav>
+  <header class="hero">
+    <img class="hero-img" src="pins/sky.jpg" alt="" />
+    <div class="hero-shade"></div>
 
-  <div class="cover"><img src="pins/ds.jpg" alt="" /></div>
+    <div class="hud hud-tl">
+      <span id="mode-dot"></span><span id="mode-label">demo</span>
+      <span class="sep">/</span><span id="ep"></span>
+    </div>
+    <nav class="hud hud-tr">
+      <button id="session-timer" class="hidden" title="stop and log this session"></button>
+      <button id="recap-btn">previously on</button>
+      <button id="connect-btn">connect notion</button>
+    </nav>
+
+    <div class="title-card">
+      <p class="kicker">a self-directed study</p>
+      <h1>unsupervised</h1>
+      <p class="credit">written &amp; directed by <b>ibnul</b></p>
+    </div>
+
+    <div class="hud hud-bl"><span id="footer-line"></span></div>
+    <div class="hud hud-br"><span id="clock"></span></div>
+  </header>
+
+  <section id="stats" class="readouts" aria-label="this week"></section>
 
   <main>
-    <div class="page-icon">🎞️</div>
-    <h1 class="page-title">unsupervised.</h1>
-    <blockquote class="epigraph">
-      <i>keep on keeping on.</i> — a self-directed study ·
-      <span class="credit">written &amp; directed by ibnul</span>
-    </blockquote>
+    <aside>
+      <h2><i>01</i>the shelf</h2>
+      <div id="topics" class="topics"></div>
 
-    <div class="room-row">
+      <h3>last 15 weeks</h3>
+      <div id="heatmap" class="heatmap"></div>
+
       <details class="rules">
         <summary>house rules</summary>
         <ol>
-          <li>get in the robot — start first, motivation later</li>
-          <li>damn fine coffee required</li>
-          <li>read the paper, run the code</li>
-          <li>the backlog is a museum: visit, don't live there</li>
+          <li>get in the robot. start first, motivation later.</li>
+          <li>damn fine coffee required.</li>
+          <li>read the paper, run the code.</li>
+          <li>the backlog is a museum. visit, don't live there.</li>
         </ol>
       </details>
-      <a class="bookmark" href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" rel="noopener">
-        <span class="bm-title">▶ lofi girl — beats to relax/study to</span>
-        <span class="bm-url">youtube.com</span>
+
+      <a class="spinning" href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" rel="noopener">
+        <span class="bars"><i></i><i></i><i></i></span>
+        <span>now spinning<b>lofi girl radio</b></span>
       </a>
-    </div>
 
-    <h2 class="section">the desk</h2>
+      <p class="hint">drag <a id="bm" href="#">+ unsupervised</a> to your bookmarks bar to capture any page in one click.</p>
+    </aside>
 
-    <form id="add-form">
-      <input id="i-title" placeholder="what are you learning next? — or paste a link" required />
-      <input id="i-topic" placeholder="topic (e.g. AI Infra)" />
-      <select id="i-type">
-        <option>Paper</option><option>Video</option><option selected>Docs</option>
-        <option>Project</option><option>Repo</option><option>Habit</option>
-      </select>
-      <input id="i-target" type="date" title="target date" />
-      <button class="btn" type="submit">add</button>
-    </form>
+    <section class="desk">
+      <h2><i>02</i>the desk</h2>
 
-    <div id="groups"></div>
+      <form id="add-form">
+        <div class="capture">
+          <span class="prompt">&gt;</span>
+          <input id="i-title" placeholder="paste a link, or type what you're learning next" required autocomplete="off" />
+          <button class="go" type="submit">add</button>
+        </div>
+        <div class="capture-opts">
+          <input id="i-topic" placeholder="topic" list="topic-list" autocomplete="off" />
+          <datalist id="topic-list"></datalist>
+          <select id="i-type" title="type">
+            <option>Paper</option><option>Video</option><option selected>Docs</option>
+            <option>Project</option><option>Repo</option><option>Habit</option>
+          </select>
+          <input id="i-target" type="date" title="target date" />
+        </div>
+      </form>
 
-    <h2 class="section">the shelf</h2>
-    <div class="callout"><span class="callout-icon">📈</span><div id="stats" class="stats"></div></div>
-    <div id="heatmap" class="heatmap" title="completions per day"></div>
-    <div class="hint">drag <a id="bm" href="#">[ + unsupervised ]</a> to your bookmarks bar — capture any page in one click</div>
-
-    <h2 class="section">the wall</h2>
-    <div class="wall-frame">
-      <img id="wall-img" src="pins/battlestation.jpg" alt="" />
-      <span id="wall-cap"></span>
-    </div>
-
-    <h2 class="section">previously on</h2>
-    <p class="recap-line"><button id="recap-btn-2" class="link">read this week's recap →</button></p>
-
-    <footer><span id="footer-line"></span></footer>
+      <div id="groups"></div>
+    </section>
   </main>
 
-  <div id="recap-modal" class="modal hidden">
-    <div class="modal-box">
-      <div class="modal-head">
-        <span>previously, on your studies</span>
-        <button id="recap-close" class="link">close</button>
+  <section class="wall">
+    <div class="wall-head">
+      <h2><i>03</i>the wall</h2>
+      <div class="wall-nav">
+        <button id="wall-prev" aria-label="previous">&larr;</button>
+        <button id="wall-next" aria-label="next">&rarr;</button>
       </div>
-      <pre id="recap-text"></pre>
+    </div>
+    <div id="wall-strip" class="strip"></div>
+  </section>
+
+  <footer>
+    <button id="recap-btn-2">previously on<span>read this week's recap &rarr;</span></button>
+    <p>keep on keeping on.</p>
+  </footer>
+
+  <div id="recap-modal" class="modal hidden">
+    <div class="modal-box recap-box">
+      <button id="recap-close" class="close">close</button>
+      <div class="ep-card">
+        <span id="recap-ep">episode:47</span>
+        <b>previously,<br />on your studies</b>
+      </div>
+      <div id="recap-text"></div>
       <div id="recap-status" class="footnote"></div>
     </div>
   </div>
 
   <div id="connect-modal" class="modal hidden">
     <div class="modal-box">
-      <div class="modal-head">
-        <span>connect notion</span>
-        <button id="connect-close" class="link">close</button>
-      </div>
+      <button id="connect-close" class="close">close</button>
+      <div class="ep-card"><b>connect notion</b></div>
       <ol class="steps">
         <li>Create an integration at <b>notion.so/profile/integrations</b> and copy the token.</li>
         <li>Make a Notion page, share it with the integration, copy its link.</li>
       </ol>
-      <input id="n-token" placeholder="integration token (ntn_…)" />
+      <input id="n-token" placeholder="integration token (ntn_...)" />
       <input id="n-parent" placeholder="parent page url" />
-      <button id="connect-go" class="btn">provision learning log</button>
+      <button id="connect-go" class="go">provision learning log</button>
       <div id="connect-status" class="footnote"></div>
     </div>
   </div>
