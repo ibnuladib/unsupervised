@@ -60,6 +60,10 @@ npm start          # http://localhost:3000 — demo mode, zero setup
 3. Click **connect notion** in the app and paste both — or set `NOTION_TOKEN`,
    `NOTION_PARENT_PAGE`, `NOTION_DB_ID` in `.env` (see `.env.example`).
 
+## Live workspace
+
+The author's real instance: [unsupervised. on Notion](https://app.notion.com/p/41ffba39bd0681e79e3fc977f8e56169) — learning log + topics rollups + kanban/calendar views + filed recaps.
+
 ## Stack
 
 Node.js · Express · @notionhq/client · vanilla JS/CSS (EB Garamond + IBM Plex
