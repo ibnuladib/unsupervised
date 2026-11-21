@@ -25,18 +25,26 @@
     </nav>
   </header>
 
+  <div class="cover"><img src="pins/ds.jpg" alt="" /></div>
+
   <main>
+    <p class="epigraph"><i>keep on keeping on.</i></p>
     <p class="tagline">a self-directed study<br /><span class="credit">written &amp; directed by ibnul</span></p>
 
-    <div class="wall-frame">
-      <img id="wall-img" src="pins/battlestation.jpg" alt="" />
-      <span id="wall-cap"></span>
+    <div class="room-row">
+      <details class="rules">
+        <summary>house rules</summary>
+        <ol>
+          <li>get in the robot — start first, motivation later</li>
+          <li>damn fine coffee required</li>
+          <li>read the paper, run the code</li>
+          <li>the backlog is a museum: visit, don't live there</li>
+        </ol>
+      </details>
+      <a class="now-playing" href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" rel="noopener">now spinning ↗ lofi girl</a>
     </div>
 
-    <div id="stats" class="stats"></div>
-
-    <div id="heatmap" class="heatmap" title="completions per day"></div>
-    <div class="hint">drag <a id="bm" href="#">[ + unsupervised ]</a> to your bookmarks bar — capture any page in one click</div>
+    <h2 class="section">the desk</h2>
 
     <form id="add-form">
       <input id="i-title" placeholder="what are you learning next? — or paste a link" required />
@@ -50,6 +58,20 @@
     </form>
 
     <div id="groups"></div>
+
+    <h2 class="section">the shelf</h2>
+    <div id="stats" class="stats"></div>
+    <div id="heatmap" class="heatmap" title="completions per day"></div>
+    <div class="hint">drag <a id="bm" href="#">[ + unsupervised ]</a> to your bookmarks bar — capture any page in one click</div>
+
+    <h2 class="section">the wall</h2>
+    <div class="wall-frame">
+      <img id="wall-img" src="pins/battlestation.jpg" alt="" />
+      <span id="wall-cap"></span>
+    </div>
+
+    <h2 class="section">previously on</h2>
+    <p class="recap-line"><button id="recap-btn-2" class="link">read this week's recap →</button></p>
 
     <footer><span id="footer-line"></span></footer>
   </main>

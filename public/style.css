@@ -250,3 +250,51 @@ footer {
   color: var(--dim);
 }
 #wall-cap::before { content: "the wall · "; color: var(--faint); }
+
+/* --- cover, mirroring the notion page --- */
+.cover {
+  height: 210px; overflow: hidden; position: relative;
+  border-bottom: 1px solid var(--line);
+}
+.cover img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 60%;
+  filter: grayscale(0.4) sepia(0.16) brightness(0.82) contrast(0.95);
+}
+.cover::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, var(--bg));
+}
+
+/* --- room sections, same names as the notion page --- */
+.section {
+  font-family: var(--mono); font-size: 11px; font-weight: 400;
+  letter-spacing: 2.5px; text-transform: lowercase; color: var(--faint);
+  margin: 38px 0 14px; display: flex; align-items: center; gap: 12px;
+}
+.section::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+.epigraph {
+  font-style: italic; color: var(--dim); font-size: 14px; margin: 0 0 6px;
+}
+
+.room-row {
+  display: flex; align-items: baseline; gap: 26px; flex-wrap: wrap;
+  margin: 18px 0 4px;
+}
+.rules summary {
+  font-family: var(--mono); font-size: 12px; color: var(--faint);
+  cursor: pointer; list-style: none; letter-spacing: 0.5px;
+}
+.rules summary::before { content: "▸ "; }
+.rules[open] summary::before { content: "▾ "; }
+.rules ol {
+  margin: 10px 0 4px; padding-left: 22px; color: var(--dim);
+  font-size: 13.5px; line-height: 1.9;
+}
+.now-playing {
+  font-family: var(--mono); font-size: 12px; color: var(--faint);
+  text-decoration: none;
+}
+.now-playing:hover { color: var(--text); }
+
+.recap-line { margin: 0 0 30px; }

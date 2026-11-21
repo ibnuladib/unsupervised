@@ -268,7 +268,7 @@ $("add-form").onsubmit = async (e) => {
   }
 };
 
-$("recap-btn").onclick = async () => {
+const openRecap = async () => {
   $("recap-modal").classList.remove("hidden");
   $("recap-text").textContent = "rolling the recap…";
   $("recap-status").textContent = "";
@@ -292,6 +292,8 @@ function typewrite(el, text) {
   tick();
 }
 
+$("recap-btn").onclick = openRecap;
+$("recap-btn-2").onclick = openRecap;
 $("recap-close").onclick = () => $("recap-modal").classList.add("hidden");
 $("connect-btn").onclick = () => $("connect-modal").classList.remove("hidden");
 $("connect-close").onclick = () => $("connect-modal").classList.add("hidden");
