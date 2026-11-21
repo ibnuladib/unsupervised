@@ -7,8 +7,8 @@
   --faint: #5c554a;
   --accent: #a8b490;
   --amber: #cfa86a;
-  --serif: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", "Cascadia Code", Consolas, monospace;
+  --serif: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  --mono: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace;
 }
 
 * { box-sizing: border-box; margin: 0; }
@@ -403,3 +403,7 @@ main { padding-top: 0; }
 
 /* wall, taller like a notion image gallery */
 .wall-frame { height: 240px; border-radius: 6px; border: none; }
+
+/* sharper cover: frame the figure, no upscaled crop */
+.cover { height: 300px; }
+.cover img { object-position: center 63%; image-rendering: auto; }
